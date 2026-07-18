@@ -1,0 +1,66 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [ "setuptools>=77" ]
+
+[project]
+name = "django-simple-icons"
+version = "16.26.0"
+description = "Use Simple Icons brand icons in your Django and Jinja templates."
+readme = "README.md"
+keywords = [ "django", "icons", "jinja", "simple-icons", "svg" ]
+license = "MIT"
+license-files = [ "LICENSE" ]
+authors = [
+  { name = "M4p4", email = "homejr@protonmail.com" },
+]
+requires-python = ">=3.12"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Framework :: Django",
+  "Framework :: Django :: 4.2",
+  "Framework :: Django :: 5.2",
+  "Framework :: Django :: 6.0",
+  "Framework :: Django :: 6.1",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+]
+optional-dependencies.django = [ "django>=4.2" ]
+optional-dependencies.jinja = [ "jinja2>=2.8" ]
+urls.Changelog = "https://github.com/M4p4/django-simple-icons/blob/main/CHANGELOG.md"
+urls.Repository = "https://github.com/M4p4/django-simple-icons"
+
+[dependency-groups]
+test = [
+  "coverage[toml]",
+  "jinja2",
+  "pytest",
+  "pytest-randomly",
+]
+django52 = [ "django>=5.2,<5.3" ]
+django60 = [ "django>=6.0,<6.1" ]
+# Django 6.1 is still in beta; the specifier opts uv into prereleases and will
+# resolve to the final release once it lands.
+django61 = [ "django>=6.1b1,<6.2" ]
+
+[tool.setuptools.packages.find]
+where = [ "src" ]
+
+[tool.setuptools.package-data]
+django_simple_icons = [ "py.typed", "simple-icons.zip" ]
+
+[tool.uv]
+# uv only auto-installs the `dev` group, so name the groups a bare `uv run`
+# needs. The full version matrix is exercised by tox, not by the default env.
+default-groups = [ "test", "django60" ]
+conflicts = [
+  [
+    { group = "django52" },
+    { group = "django60" },
+    { group = "django61" },
+  ],
+]
