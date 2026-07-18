@@ -42,16 +42,14 @@ test = [
   "pytest-randomly",
 ]
 django52 = [ "django>=5.2,<5.3" ]
-django60 = [ "django>=6.0,<6.1" ]
+django60 = [ "django>=6,<6.1" ]
 # Django 6.1 is still in beta; the specifier opts uv into prereleases and will
 # resolve to the final release once it lands.
 django61 = [ "django>=6.1b1,<6.2" ]
 
-[tool.setuptools.packages.find]
-where = [ "src" ]
-
-[tool.setuptools.package-data]
-django_simple_icons = [ "py.typed", "simple-icons.zip" ]
+[tool.setuptools]
+packages.find.where = [ "src" ]
+package-data.django_simple_icons = [ "py.typed", "simple-icons.zip" ]
 
 [tool.uv]
 # uv only auto-installs the `dev` group, so name the groups a bare `uv run`
@@ -64,3 +62,71 @@ conflicts = [
     { group = "django61" },
   ],
 ]
+
+[tool.ruff]
+lint.select = [
+  # flake8-bugbear
+  "B",
+  # flake8-comprehensions
+  "C4",
+  # pycodestyle
+  "E",
+  # Pyflakes errors
+  "F",
+  # isort
+  "I",
+  # flake8-simplify
+  "SIM",
+  # flake8-tidy-imports
+  "TID",
+  # pyupgrade
+  "UP",
+  # Pyflakes warnings
+  "W",
+]
+lint.ignore = [
+  # flake8-bugbear opinionated rules
+  "B9",
+  # line-too-long
+  "E501",
+  # suppressible-exception
+  "SIM105",
+  # if-else-block-instead-of-if-exp
+  "SIM108",
+]
+lint.extend-safe-fixes = [
+  # non-pep585-annotation
+  "UP006",
+]
+lint.isort.required-imports = [ "from __future__ import annotations" ]
+
+[tool.pyproject-fmt]
+max_supported_python = "3.14"
+
+[tool.mypy]
+mypy_path = "src/"
+namespace_packages = false
+warn_unreachable = true
+enable_error_code = [
+  "ignore-without-code",
+  "redundant-expr",
+  "truthy-bool",
+]
+strict = true
+overrides = [ { module = "tests.*", allow_untyped_defs = true } ]
+
+[tool.coverage]
+run.branch = true
+run.data_file = ".coverage/cov"
+run.parallel = true
+run.source = [
+  "django_simple_icons",
+  "tests",
+]
+paths.source = [
+  "src",
+  ".tox/**/site-packages",
+]
+report.show_missing = true
+report.skip_covered = true
+report.skip_empty = true
