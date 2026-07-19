@@ -107,7 +107,7 @@ class TestSimpleIcon:
     def test_safe_string_arguments_are_still_escaped(self):
         result = render(
             "{% load simple_icons %}"
-            '{% simple_icon name color=color title=title data_test=attr %}',
+            "{% simple_icon name color=color title=title data_test=attr %}",
             name=mark_safe("django"),
             color=mark_safe("#123456"),
             title=mark_safe("a < 2"),
