@@ -138,7 +138,7 @@ wheels = [
 
 [[package]]
 name = "django-simple-icons"
-version = "16.26.0"
+version = "16.27.0"
 source = { editable = "." }
 
 [package.optional-dependencies]
@@ -177,7 +177,7 @@ provides-extras = ["django", "jinja"]
 
 [package.metadata.requires-dev]
 django52 = [{ name = "django", specifier = ">=5.2,<5.3" }]
-django60 = [{ name = "django", specifier = ">=6.0,<6.1" }]
+django60 = [{ name = "django", specifier = ">=6,<6.1" }]
 django61 = [{ name = "django", specifier = ">=6.1b1,<6.2" }]
 test = [
     { name = "coverage", extras = ["toml"] },
