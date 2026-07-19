@@ -4,11 +4,18 @@ on:
   push:
     branches:
     - main
+    tags:
+    # Dotted version tags only (16.26.0, 16.26.0.1), so a bare tag like
+    # `nightly` cannot start the pipeline. Uses only documented glob syntax --
+    # character ranges such as [0-9] are not documented for tag filters, and an
+    # unsupported pattern would fail silently by never triggering a release.
+    - '*.*.*'
   pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel a tag build: it is the one that publishes to PyPI.
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 permissions:
   contents: read
@@ -102,3 +109,47 @@ jobs:
         name: dist
         path: dist/
         if-no-files-found: error
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    # Publish only a tag whose every check passed, and only the artifact those
+    # checks were run against -- this job never rebuilds.
+    needs: [ lint, tests, coverage, build ]
+    if: startsWith(github.ref, 'refs/tags/')
+    environment: release
+    permissions:
+      id-token: write
+    # No checkout: the version is read from the artifact being published rather
+    # than from the repo, so this job needs no repo access at all.
+    steps:
+    - name: Download distributions
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # frozen: v7.0.0
+      with:
+        name: dist
+        path: dist/
+    - name: Check the tag matches the version being published
+      run: |
+        set -euo pipefail
+        version=""
+        for wheel in dist/*.whl; do
+          [ -e "$wheel" ] || continue
+          if [ -n "$version" ]; then
+            echo "::error::more than one wheel in dist/, refusing to guess"
+            exit 1
+          fi
+          filename=$(basename "$wheel")
+          version=${filename#*-}
+          version=${version%%-*}
+        done
+        if [ -z "$version" ]; then
+          echo "::error::no wheel found in dist/"
+          exit 1
+        fi
+        if [ "$GITHUB_REF_NAME" != "$version" ]; then
+          echo "::error::tag $GITHUB_REF_NAME does not match packaged version $version ($filename)"
+          exit 1
+        fi
+        echo "Releasing $version"
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # frozen: v1.14.0
