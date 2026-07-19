@@ -4,11 +4,14 @@ on:
   push:
     branches:
     - main
+    tags:
+    - '*'
   pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel a tag build: it is the one that publishes to PyPI.
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 permissions:
   contents: read
@@ -102,3 +105,31 @@ jobs:
         name: dist
         path: dist/
         if-no-files-found: error
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    # Publish only a tag whose every check passed, and only the artifact those
+    # checks were run against -- this job never rebuilds.
+    needs: [ lint, tests, coverage, build ]
+    if: startsWith(github.ref, 'refs/tags/')
+    environment: release
+    permissions:
+      id-token: write
+    steps:
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # frozen: v7.0.0
+    - name: Check the tag matches the packaged version
+      run: |
+        version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+        if [ "$GITHUB_REF_NAME" != "$version" ]; then
+          echo "::error::tag $GITHUB_REF_NAME does not match pyproject version $version"
+          exit 1
+        fi
+        echo "Releasing $version"
+    - name: Download distributions
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # frozen: v7.0.0
+      with:
+        name: dist
+        path: dist/
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # frozen: v1.14.0
