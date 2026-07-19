@@ -17,11 +17,6 @@ def simple_icon(
     title: str | bool = False,
     **attrs: object,
 ) -> str:
-    # simple_tag marks string literals parsed from the template as safe, but
-    # they aren't. No un-marking is needed: the renderer serializes through
-    # ElementTree, which escapes str subclasses like any other string, and
-    # returns a plain str. test_safe_string_arguments_are_still_escaped guards
-    # this.
     return mark_safe(
         _render_icon(name, size=size, color=color, title=title, attrs=attrs)
     )
