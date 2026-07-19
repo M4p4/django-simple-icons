@@ -50,8 +50,11 @@ jobs:
       with:
         enable-cache: true
         python-version: ${{ matrix.python-version }}
+    # Pinned like the action SHAs above: tox-uv decides which dependency groups
+    # each env installs, so an unreviewed upgrade can silently change what is
+    # actually tested.
     - name: Run tox targets for Python ${{ matrix.python-version }}
-      run: uvx --with tox-uv tox run -f py$(echo ${{ matrix.python-version }} | tr -d .)
+      run: uvx --with tox-uv==1.35.2 tox==4.57.0 run -f py$(echo ${{ matrix.python-version }} | tr -d .)
     - name: Upload coverage data
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # frozen: v7.0.1
       with:
