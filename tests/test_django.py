@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import inspect
+
 import django
 import pytest
 from django.conf import settings
@@ -7,6 +9,8 @@ from django.template import Context, Template
 from django.utils.safestring import SafeString, mark_safe
 
 from django_simple_icons import IconDoesNotExist
+from django_simple_icons.jinja import simple_icon as jinja_simple_icon
+from django_simple_icons.templatetags.simple_icons import simple_icon as tag_simple_icon
 
 settings.configure(
     INSTALLED_APPS=["django_simple_icons"],
@@ -117,3 +121,35 @@ class TestSimpleIcon:
         assert 'fill="#123456"' in result
         assert "<title>a &lt; 2</title>" in result
         assert 'data-test="a &lt; 2"' in result
+
+
+# SPECS promises the Jinja function has the "same signature and behavior" as the
+# tag. Both live here rather than in test_jinja.py because this module owns
+# settings.configure(), and pytest-randomly makes cross-module import order
+# unreliable.
+class TestParityWithJinja:
+    def test_signatures_match(self):
+        tag = inspect.signature(tag_simple_icon)
+        jinja = inspect.signature(jinja_simple_icon)
+
+        # Return annotations differ by design: SafeString vs Markup.
+        assert tag.parameters == jinja.parameters
+
+    @pytest.mark.parametrize(
+        "kwargs",
+        [
+            {},
+            {"size": 48},
+            {"size": None},
+            {"color": "brand"},
+            {"color": "#123456"},
+            {"title": True},
+            {"title": "View source"},
+            {"class_": "mr-2"},
+            {"data_test": "a < 2"},
+        ],
+    )
+    def test_output_matches(self, kwargs):
+        assert tag_simple_icon("django", **kwargs) == jinja_simple_icon(
+            "django", **kwargs
+        )
