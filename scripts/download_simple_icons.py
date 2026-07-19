@@ -23,6 +23,9 @@ import zipfile
 from pathlib import Path
 
 TARBALL_URL = "https://registry.npmjs.org/simple-icons/-/simple-icons-{version}.tgz"
+# The icon-sync workflow runs this unattended, so a stalled endpoint must fail
+# rather than hang until the job timeout.
+TIMEOUT = 60
 ZIP_PATH = (
     Path(__file__).resolve().parent.parent
     / "src"
@@ -42,9 +45,9 @@ def download(version: str) -> bytes:
     url = TARBALL_URL.format(version=version)
     print(f"Downloading {url}")
     try:
-        with urllib.request.urlopen(url) as response:  # noqa: S310
+        with urllib.request.urlopen(url, timeout=TIMEOUT) as response:  # noqa: S310
             data: bytes = response.read()
-    except urllib.error.URLError as exc:
+    except (urllib.error.URLError, TimeoutError) as exc:
         sys.exit(f"Failed to download {url}: {exc}")
     return data
 

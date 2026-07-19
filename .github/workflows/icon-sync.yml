@@ -1,0 +1,135 @@
+name: Icon sync
+
+on:
+  schedule:
+  # Daily, at an off-peak minute so the run is not queued behind the hour.
+  - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      upstream:
+        description: 'Simple Icons version to sync to (default: the latest npm release)'
+        required: false
+        type: string
+
+concurrency:
+  group: icon-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  sync:
+    name: Sync
+    runs-on: ubuntu-latest
+    # Unattended and scheduled: cap it well under the 6-hour default so a
+    # stalled step cannot burn a runner every night.
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # frozen: v7.0.0
+    - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990  # frozen: v8.3.2
+      with:
+        enable-cache: true
+        python-version: '3.14'
+
+    - name: Check for a newer Simple Icons release
+      id: check
+      # The dispatch input reaches the shell as an environment variable rather
+      # than by interpolation, so it cannot be injected into the command.
+      env:
+        UPSTREAM: ${{ inputs.upstream }}
+      run: |
+        if [ -n "$UPSTREAM" ]; then
+          uv run --frozen python scripts/check_upstream_version.py --upstream "$UPSTREAM"
+        else
+          uv run --frozen python scripts/check_upstream_version.py
+        fi
+
+    - name: Record the current slugs
+      if: steps.check.outputs.sync == 'true'
+      run: uv run --frozen python scripts/icon_slugs.py > /tmp/slugs-before.txt
+
+    - name: Regenerate the icon bundle
+      if: steps.check.outputs.sync == 'true'
+      env:
+        UPSTREAM: ${{ steps.check.outputs.upstream }}
+      run: uv run --frozen python scripts/download_simple_icons.py "$UPSTREAM"
+
+    - name: Bump the version and changelog
+      if: steps.check.outputs.sync == 'true'
+      env:
+        UPSTREAM: ${{ steps.check.outputs.upstream }}
+      run: uv run --frozen python scripts/bump_version.py "$UPSTREAM"
+
+    - name: Relock
+      if: steps.check.outputs.sync == 'true'
+      # uv.lock records the project version, so tox's `uv sync --locked` fails
+      # against a bumped pyproject until the lockfile is regenerated.
+      run: uv lock
+
+    - name: Test the new bundle
+      if: steps.check.outputs.sync == 'true'
+      # A pull request opened with GITHUB_TOKEN gets no checks of its own, so
+      # the tests run here instead. This covers all three Django versions.
+      run: uvx --with tox-uv==1.35.2 tox==4.57.0 run -f py314
+
+    - name: Lint the bumped files
+      if: steps.check.outputs.sync == 'true'
+      # Same reason as the tests above: the pull request gets no Lint job, and
+      # the bump edits pyproject.toml and CHANGELOG.md, which hooks cover.
+      run: uvx --with pre-commit-uv pre-commit run --all-files --show-diff-on-failure
+
+    - name: Build the pull request body
+      if: steps.check.outputs.sync == 'true'
+      env:
+        UPSTREAM: ${{ steps.check.outputs.upstream }}
+        BUNDLED: ${{ steps.check.outputs.bundled }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        {
+          echo "Regenerates the bundled icons from Simple Icons \`$UPSTREAM\` (was \`$BUNDLED\`)."
+          echo
+          echo "Opened automatically by the icon-sync workflow."
+          echo
+          echo "## What to review"
+          echo
+          echo "The bundle is a binary zip, so the file diff is not reviewable. The slug"
+          echo "changes below are the part that matters."
+          echo
+          uv run --frozen python scripts/icon_slugs.py --since /tmp/slugs-before.txt
+          echo
+          echo "## Checks"
+          echo
+          echo "This pull request was opened with \`GITHUB_TOKEN\`, so GitHub does not run"
+          echo "workflows on it. The test matrix ran in the sync job instead:"
+          echo "[view the run]($RUN_URL)."
+          echo
+          echo "## Releasing"
+          echo
+          echo "Merging does not publish. After merging, tag the merge commit to release:"
+          echo
+          echo '```console'
+          echo "git switch main && git pull"
+          echo "git tag $UPSTREAM && git push origin $UPSTREAM"
+          echo '```'
+        } > /tmp/pr-body.md
+        cat /tmp/pr-body.md
+
+    - name: Open a pull request
+      if: steps.check.outputs.sync == 'true'
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1  # frozen: v8.1.1
+      with:
+        branch: icon-sync/${{ steps.check.outputs.upstream }}
+        title: Sync Simple Icons ${{ steps.check.outputs.upstream }}
+        body-path: /tmp/pr-body.md
+        commit-message: |
+          feat: bundle Simple Icons ${{ steps.check.outputs.upstream }}
+
+          Regenerated by the icon-sync workflow.
+        delete-branch: true
