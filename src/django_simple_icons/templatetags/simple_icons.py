@@ -1,18 +1,11 @@
 from __future__ import annotations
 
 from django import template
-from django.utils.safestring import SafeString, mark_safe
+from django.utils.safestring import mark_safe
 
 from django_simple_icons import _render_icon
 
 register = template.Library()
-
-
-def _unsafe[T](value: T) -> T | str:
-    # simple_tag's parsing loads passed strings as safe, but they aren't.
-    # Cast the SafeString's back to normal strings the only way possible, by
-    # concatenating the empty string.
-    return value + "" if isinstance(value, SafeString) else value
 
 
 @register.simple_tag
@@ -24,12 +17,11 @@ def simple_icon(
     title: str | bool = False,
     **attrs: object,
 ) -> str:
+    # simple_tag marks string literals parsed from the template as safe, but
+    # they aren't. No un-marking is needed: the renderer serializes through
+    # ElementTree, which escapes str subclasses like any other string, and
+    # returns a plain str. test_safe_string_arguments_are_still_escaped guards
+    # this.
     return mark_safe(
-        _render_icon(
-            _unsafe(name),
-            size=size,
-            color=_unsafe(color),
-            title=_unsafe(title),
-            attrs={key: _unsafe(value) for key, value in attrs.items()},
-        )
+        _render_icon(name, size=size, color=color, title=title, attrs=attrs)
     )
