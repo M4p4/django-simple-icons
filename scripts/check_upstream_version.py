@@ -26,6 +26,9 @@ import urllib.request
 from pathlib import Path
 
 LATEST_URL = "https://registry.npmjs.org/simple-icons/latest"
+# The daily workflow runs unattended, so a stalled endpoint must fail rather
+# than hang until the job timeout.
+TIMEOUT = 30
 PYPROJECT = Path(__file__).resolve().parent.parent / "pyproject.toml"
 NUMERIC_VERSION = re.compile(r"\A[0-9]+(?:\.[0-9]+)*\Z")
 
@@ -39,9 +42,9 @@ def bundled_version(path: Path) -> str:
 
 def latest_version() -> str:
     try:
-        with urllib.request.urlopen(LATEST_URL) as response:  # noqa: S310
+        with urllib.request.urlopen(LATEST_URL, timeout=TIMEOUT) as response:  # noqa: S310
             version: str = json.loads(response.read())["version"]
-    except (urllib.error.URLError, json.JSONDecodeError, KeyError) as exc:
+    except (urllib.error.URLError, json.JSONDecodeError, KeyError, TimeoutError) as exc:
         sys.exit(f"Failed to read the latest version from {LATEST_URL}: {exc}")
     return version
 
@@ -62,6 +65,10 @@ def is_newer(upstream: str, bundled: str) -> bool:
 
 def emit(**outputs: str) -> None:
     for key, value in outputs.items():
+        # A newline would let a crafted --upstream append further key=value
+        # lines to $GITHUB_OUTPUT and invent step outputs.
+        if "\n" in value or "\r" in value:
+            sys.exit(f"Refusing to emit {key} containing a newline: {value!r}")
         print(f"{key}={value}")
     github_output = os.environ.get("GITHUB_OUTPUT")
     if github_output:

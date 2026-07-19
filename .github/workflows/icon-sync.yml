@@ -25,6 +25,9 @@ jobs:
   sync:
     name: Sync
     runs-on: ubuntu-latest
+    # Unattended and scheduled: cap it well under the 6-hour default so a
+    # stalled step cannot burn a runner every night.
+    timeout-minutes: 20
     permissions:
       contents: write
       pull-requests: write
@@ -75,6 +78,12 @@ jobs:
       # A pull request opened with GITHUB_TOKEN gets no checks of its own, so
       # the tests run here instead. This covers all three Django versions.
       run: uvx --with tox-uv==1.35.2 tox==4.57.0 run -f py314
+
+    - name: Lint the bumped files
+      if: steps.check.outputs.sync == 'true'
+      # Same reason as the tests above: the pull request gets no Lint job, and
+      # the bump edits pyproject.toml and CHANGELOG.md, which hooks cover.
+      run: uvx --with pre-commit-uv pre-commit run --all-files --show-diff-on-failure
 
     - name: Build the pull request body
       if: steps.check.outputs.sync == 'true'
