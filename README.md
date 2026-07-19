@@ -4,10 +4,10 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/django-simple-icons.svg)](https://pypi.org/project/django-simple-icons/)
 [![CI](https://github.com/M4p4/django-simple-icons/actions/workflows/main.yml/badge.svg)](https://github.com/M4p4/django-simple-icons/actions/workflows/main.yml)
 
-Use [Simple Icons](https://simpleicons.org/), 3,449 SVG brand icons, in your Django and
-Jinja templates. The icons ship inside the package, so there is no CDN to call and no
-static files to collect. Each icon renders as inline SVG that follows the surrounding
-text color.
+Use [Simple Icons](https://simpleicons.org/), more than 3,400 SVG brand icons, in your
+Django and Jinja templates. The icons ship inside the package, so there is no CDN to
+call and no static files to collect. Each icon renders as inline SVG that follows the
+surrounding text color.
 
 ## Installation
 
