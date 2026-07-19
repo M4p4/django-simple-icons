@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.27.0 (2026-07-19)
+
+- Bundled Simple Icons 16.27.0 (3,450 icons).
+
 ## 16.26.0 (2026-07-19)
 
 First release, bundling Simple Icons 16.26.0 (3,449 icons).
