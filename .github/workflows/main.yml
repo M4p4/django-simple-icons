@@ -34,6 +34,20 @@ jobs:
     - name: Run pre-commit
       run: uvx --with pre-commit-uv pre-commit run --all-files --show-diff-on-failure
 
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # frozen: v7.0.0
+    - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990  # frozen: v8.3.2
+      with:
+        enable-cache: true
+        python-version: '3.14'
+    # Interim single-version run; the full tox matrix and coverage gate follow
+    # once there is more than the core module to test.
+    - name: Run tests
+      run: uv run --frozen pytest
+
   build:
     name: Build
     runs-on: ubuntu-latest

@@ -113,7 +113,11 @@ enable_error_code = [
   "truthy-bool",
 ]
 strict = true
-overrides = [ { module = "tests.*", allow_untyped_defs = true } ]
+overrides = [ { module = "tests.*", allow_untyped_defs = true, allow_untyped_calls = true } ]
+
+[tool.pytest]
+ini_options.testpaths = [ "tests" ]
+ini_options.addopts = "-ra --strict-config --strict-markers"
 
 [tool.coverage]
 run.branch = true
