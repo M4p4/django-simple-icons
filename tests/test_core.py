@@ -97,8 +97,21 @@ class TestRender:
 
         assert "<title>a &lt; 2</title>" in result
 
+    def test_title_none_leaves_the_title_empty(self):
+        result = render(title=None)
+
+        assert "<title />" in result
+        assert "None" not in result
+
+    def test_color_none_is_rejected(self):
+        with pytest.raises(TypeError):
+            render(color=None)
+
     def test_attrs_underscores_become_dashes(self):
         assert 'data-controller="icon"' in render(data_controller="icon")
+
+    def test_attrs_trailing_underscore_is_stripped(self):
+        assert 'class="mr-2"' in render(class_="mr-2")
 
     def test_attrs_values_are_stringified(self):
         assert 'tabindex="-1"' in render(tabindex=-1)

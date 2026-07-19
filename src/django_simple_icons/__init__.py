@@ -68,6 +68,17 @@ def get_brand_color(name: str) -> str:
     return f"#{hex_}"
 
 
+def _plain_str(value: Any) -> Any:
+    """Demote a ``str`` subclass to ``str``, leaving anything else untouched.
+
+    ``markupsafe.Markup`` overrides ``replace()`` to escape its arguments, so
+    ElementTree's serializer would turn its own ``&lt;`` into ``&amp;lt;``.
+    Non-strings pass through so ElementTree still rejects what it cannot
+    serialize instead of silently emitting ``"None"``.
+    """
+    return str(value) if isinstance(value, str) else value
+
+
 def _render_icon(
     name: str,
     *,
@@ -76,6 +87,9 @@ def _render_icon(
     title: str | bool,
     attrs: dict[str, Any],
 ) -> str:
+    color = _plain_str(color)
+    title = _plain_str(title)
+
     svg = deepcopy(_load_icon(name))
 
     if size is not None:
@@ -85,7 +99,7 @@ def _render_icon(
     if color == "brand":
         svg.set("fill", get_brand_color(name))
     else:
-        svg.set("fill", str(color))
+        svg.set("fill", color)
 
     title_element = svg.find("title")
     assert title_element is not None  # every Simple Icon ships a <title>
@@ -95,12 +109,12 @@ def _render_icon(
         svg.attrib.pop("role", None)
         svg.set("aria-hidden", "true")
     elif title is not True:
-        # str(): markupsafe.Markup overrides replace() to escape its arguments,
-        # which would double-escape ElementTree's own serialization.
-        title_element.text = str(title)
+        title_element.text = title
 
     for key, value in attrs.items():
-        svg.set(key.replace("_", "-"), str(value))
+        # removesuffix: `class` and `for` are reserved words, so the Python and
+        # Jinja surfaces have to spell them `class_` / `for_`.
+        svg.set(key.removesuffix("_").replace("_", "-"), str(_plain_str(value)))
 
     # Tags carry no namespace after _load_icon(), so no xmlns is serialized —
     # inline SVG inherits it from the surrounding HTML document anyway.

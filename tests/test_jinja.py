@@ -44,7 +44,7 @@ class TestSimpleIcon:
         assert "height=" not in result
 
     def test_class_attribute(self):
-        result = render('{{ simple_icon("django", **{"class": "mr-2 h-6"}) }}')
+        result = render('{{ simple_icon("django", class_="mr-2 h-6") }}')
 
         assert 'class="mr-2 h-6"' in result
 
