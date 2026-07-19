@@ -85,7 +85,7 @@ def _render_icon(
     if color == "brand":
         svg.set("fill", get_brand_color(name))
     else:
-        svg.set("fill", color)
+        svg.set("fill", str(color))
 
     title_element = svg.find("title")
     assert title_element is not None  # every Simple Icon ships a <title>
@@ -95,7 +95,9 @@ def _render_icon(
         svg.attrib.pop("role", None)
         svg.set("aria-hidden", "true")
     elif title is not True:
-        title_element.text = title
+        # str(): markupsafe.Markup overrides replace() to escape its arguments,
+        # which would double-escape ElementTree's own serialization.
+        title_element.text = str(title)
 
     for key, value in attrs.items():
         svg.set(key.replace("_", "-"), str(value))

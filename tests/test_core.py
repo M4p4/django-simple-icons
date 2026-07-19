@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from markupsafe import Markup
 
 from django_simple_icons import (
     IconDoesNotExist,
@@ -90,6 +91,11 @@ class TestRender:
 
         assert "<title>Powered by Django</title>" in result
         assert 'role="img"' in result
+
+    def test_title_str_subclass_is_escaped_once(self):
+        result = render(title=Markup("a < 2"))
+
+        assert "<title>a &lt; 2</title>" in result
 
     def test_attrs_underscores_become_dashes(self):
         assert 'data-controller="icon"' in render(data_controller="icon")
