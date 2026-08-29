@@ -4,7 +4,7 @@ requires = [ "setuptools>=77" ]
 
 [project]
 name = "django-simple-icons"
-version = "16.28.0"
+version = "16.29.0"
 description = "Use Simple Icons brand icons in your Django and Jinja templates."
 readme = "README.md"
 keywords = [ "django", "icons", "jinja", "simple-icons", "svg" ]
