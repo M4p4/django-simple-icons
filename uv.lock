@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.12"
 conflicts = [[
     { package = "django-simple-icons", group = "django52" },
@@ -138,8 +138,9 @@ wheels = [
 
 [[package]]
 name = "django-simple-icons"
-version = "16.33.0"
+version = "16.34.0"
 source = { editable = "." }
+default-groups = ["django60", "test"]
 
 [package.optional-dependencies]
 django = [
