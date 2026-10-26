@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.36.0 (2026-10-26)
+
+- Bundled Simple Icons 16.36.0 (3,467 icons).
+
 ## 16.35.0 (2026-10-11)
 
 - Bundled Simple Icons 16.35.0 (3,466 icons).

@@ -115,7 +115,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref", marker = "extra == 'group-19-django-simple-icons-django60' or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61')" },
     { name = "sqlparse", marker = "extra == 'group-19-django-simple-icons-django60' or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61')" },
-    { name = "tzdata", marker = "(sys_platform == 'win32' and extra == 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61')" },
+    { name = "tzdata", marker = "(sys_platform == 'win32' and extra == 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61') or (extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/89/55/664f24ff81c9ea19cb7dfc851afeae1f3c2390c7aee01d4ded68b5c1580d/django-6.0.7.tar.gz", hash = "sha256:2998503fc083124fb58037084bfa00de323c7c743f05f1b4284e77bff0ab8890", size = 10921299, upload-time = "2026-07-07T13:51:26.485Z" }
 wheels = [
@@ -138,7 +138,7 @@ wheels = [
 
 [[package]]
 name = "django-simple-icons"
-version = "16.35.0"
+version = "16.36.0"
 source = { editable = "." }
 default-groups = ["django60", "test"]
 
@@ -146,7 +146,7 @@ default-groups = ["django60", "test"]
 django = [
     { name = "django", version = "5.2.16", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-19-django-simple-icons-django52' or (extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61')" },
     { name = "django", version = "6.0.7", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-19-django-simple-icons-django60' or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61')" },
-    { name = "django", version = "6.1b1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-19-django-simple-icons-django61' or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django60') or (extra != 'group-19-django-simple-icons-django52' and extra != 'group-19-django-simple-icons-django60')" },
+    { name = "django", version = "6.1b1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-19-django-simple-icons-django61' or (extra != 'group-19-django-simple-icons-django52' and extra != 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django60')" },
 ]
 jinja = [
     { name = "jinja2" },
@@ -303,7 +303,7 @@ name = "pytest"
 version = "9.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61') or (extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61')" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
