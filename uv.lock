@@ -101,7 +101,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref", marker = "extra == 'group-19-django-simple-icons-django52' or (extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61')" },
     { name = "sqlparse", marker = "extra == 'group-19-django-simple-icons-django52' or (extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61')" },
-    { name = "tzdata", marker = "(sys_platform == 'win32' and extra == 'group-19-django-simple-icons-django52') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61') or (extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61')" },
+    { name = "tzdata", marker = "sys_platform == 'win32' and extra == 'group-19-django-simple-icons-django52' or extra == 'group-19-django-simple-icons-django52' and (extra == 'group-19-django-simple-icons-django60' or extra == 'group-19-django-simple-icons-django61') or extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a9/26/889449d521ae508b26de715954faecd8bcf3f740affb81b2d146a83b42a5/django-5.2.16.tar.gz", hash = "sha256:59ea02020c3136fce14bef0bbece21a10a4febef5eed1c51c22ae468efa22200", size = 10890894, upload-time = "2026-07-07T13:52:17.005Z" }
 wheels = [
@@ -115,7 +115,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref", marker = "extra == 'group-19-django-simple-icons-django60' or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61')" },
     { name = "sqlparse", marker = "extra == 'group-19-django-simple-icons-django60' or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61')" },
-    { name = "tzdata", marker = "(sys_platform == 'win32' and extra == 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61') or (extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61')" },
+    { name = "tzdata", marker = "sys_platform == 'win32' and extra == 'group-19-django-simple-icons-django60' or extra == 'group-19-django-simple-icons-django52' and (extra == 'group-19-django-simple-icons-django60' or extra == 'group-19-django-simple-icons-django61') or extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/89/55/664f24ff81c9ea19cb7dfc851afeae1f3c2390c7aee01d4ded68b5c1580d/django-6.0.7.tar.gz", hash = "sha256:2998503fc083124fb58037084bfa00de323c7c743f05f1b4284e77bff0ab8890", size = 10921299, upload-time = "2026-07-07T13:51:26.485Z" }
 wheels = [
@@ -129,7 +129,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "sqlparse" },
-    { name = "tzdata", marker = "(sys_platform == 'win32' and extra != 'group-19-django-simple-icons-django52' and extra != 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django60') or (extra == 'group-19-django-simple-icons-django52' and extra == 'group-19-django-simple-icons-django61') or (extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61')" },
+    { name = "tzdata", marker = "sys_platform == 'win32' and extra != 'group-19-django-simple-icons-django52' and extra != 'group-19-django-simple-icons-django60' or extra == 'group-19-django-simple-icons-django52' and (extra == 'group-19-django-simple-icons-django60' or extra == 'group-19-django-simple-icons-django61') or extra == 'group-19-django-simple-icons-django60' and extra == 'group-19-django-simple-icons-django61'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/82/9a/5437d9ef137f041f6e24a966feaa567d219953f189b1316e049a2fd1dc31/django-6.1b1.tar.gz", hash = "sha256:d08aae6f285b8c7bb1fb1156bc0e9dc3ec94282c80b8e975c46e09daeebbb89f", size = 11194569, upload-time = "2026-06-24T17:34:10.989Z" }
 wheels = [
@@ -138,7 +138,7 @@ wheels = [
 
 [[package]]
 name = "django-simple-icons"
-version = "16.37.0"
+version = "16.38.0"
 source = { editable = "." }
 default-groups = ["django60", "test"]
 
